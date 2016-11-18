@@ -20,14 +20,16 @@ import java.io.*;
 public class Solution {
     public static String firstFileName;
     public static String secondFileName;
-    public static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
 
     static
     {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try
         {
             firstFileName = reader.readLine();
             secondFileName = reader.readLine();
+            reader.close();
         } catch (Exception e){
 
         }
@@ -42,38 +44,43 @@ public class Solution {
         ReadFileInterface f = new ReadFileThread();
         f.setFileName(fileName);
         f.start();
+        f.join();
         System.out.println(f.getFileContent());
     }
 
-    public static class ReadFileThread implements ReadFileInterface, Runnable{
+    public static class ReadFileThread extends Thread implements ReadFileInterface{
+        String fullFileName;
+
         @Override
         public void setFileName(String fullFileName)
         {
-
+            this.fullFileName = fullFileName;
         }
 
         @Override
         public String getFileContent()
         {
-            return null;
-        }
+            StringBuilder sb = new StringBuilder();
+            try
+            {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(fullFileName));
+                while(bufferedReader.ready()){
+                    sb.append(bufferedReader.readLine());
+                    sb.append(" ");
+                }
+                bufferedReader.close();
 
-        @Override
-        public void join() throws InterruptedException
-        {
+            } catch (Exception e){
 
-        }
+            }
 
-        @Override
-        public void start()
-        {
-
+            return sb.toString();
         }
 
         @Override
         public void run()
         {
-
+            getFileContent();
         }
     }
 
